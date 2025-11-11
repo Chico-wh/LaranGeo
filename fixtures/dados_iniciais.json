@@ -1,0 +1,21 @@
+[
+    {
+        "model": "transporte.linha",
+        "pk": 1,
+        "fields": {
+            "nome": "Linha Centro",
+            "codigo": "LC01",
+            "descricao": "Linha principal do centro da cidade"
+        }
+    },
+    {
+        "model": "transporte.ponto",
+        "pk": 1,
+        "fields": {
+            "nome": "Ponto Central",
+            "latitude": -23.55052,
+            "longitude": -46.633308,
+            "linha": 1
+        }
+    }
+]
