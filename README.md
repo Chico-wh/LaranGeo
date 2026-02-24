@@ -1,67 +1,69 @@
 # 🚍 Larangeo - Backend (Django)
 
-Larangeo é o backend de um sistema de monitoramento em tempo real de ônibus urbanos, desenvolvido para fornecer informações precisas de localização, status operacional e estimativas de tempo aos passageiros por meio de um aplicativo mobile.
+[![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)]()
+[![License](https://img.shields.io/badge/license-MIT-blue)]()
 
-O projeto surgiu a partir da observação direta dos problemas enfrentados no transporte público municipal, onde a ausência de dados confiáveis impacta diretamente o planejamento diário da população.
+Larangeo é o backend de um sistema de monitoramento em tempo real de ônibus urbanos. O objetivo é fornecer dados de localização, status operacional e estimativas de tempo de chegada para passageiros via aplicativo mobile.
+
+O frontend mobile foi desenvolvido com **React Native** e consome tanto a API REST quanto os **WebSockets** deste backend.
+
+Este projeto foi idealizado a partir de um problema observado na vida real: a falta de informações sobre ônibus urbanos, que gera atrasos e dificulta o planejamento dos passageiros.
 
 ---
 
-## 📌 Visão Geral
+## 🧭 Tabela de Conteúdo
 
-O sistema permite que motoristas compartilhem sua localização e status em tempo real, enquanto passageiros acompanham a movimentação dos veículos diretamente no aplicativo, com filtros por linha, destino e pontos de parada.
-
-A comunicação em tempo real é realizada por meio de WebSockets, garantindo baixa latência.
-
-O frontend mobile foi desenvolvido em React Native.
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias](#-tecnologias)
+- [Arquitetura](#-arquitetura)
+- [Instalação](#-instalação)
+- [Execução](#-execução)
+- [API e WebSockets](#-api-e-websockets)
+- [Modelos de Dados](#-modelos-de-dados)
+- [Como Contribuir](#-como-contribuir)
+- [Licença](#-licença)
+- [Autor](#-autor)
 
 ---
 
 ## ✨ Funcionalidades
 
-- 📍 Rastreamento em tempo real dos ônibus
-- 🔄 Comunicação bidirecional via WebSockets
-- 🚦 Compartilhamento de status operacional:
-  - Em operação
-  - Parado
-  - Em manutenção
-  - Atrasado
-  - Fora de serviço
-- 📱 Integração com aplicativo mobile
-- 🔍 Filtros por linha, destino e paradas
-- 🗺️ Visualização em mapa
-- ⏱️ Cálculo estimado de tempo de chegada (ETA)
-- 🚏 Cadastro e gerenciamento de pontos de parada
-- 📊 Monitoramento da frota
-- 🧩 Arquitetura modular
+O backend oferece:
+
+- 📍 Rastreamento em tempo real de ônibus via WebSockets
+- 🚦 Status operacional (ex: em operação, parado, manutenção, atrasado)
+- 📊 Filtros por linha, destino e pontos de parada
+- 🚏 Cadastro de pontos de parada e rotas
+- ⏱️ Estimativa de tempo de chegada (ETA)
+- 📱 Integração com frontend mobile (React Native)
+- 🧩 Estrutura modular para fácil expansão
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias
 
-### Backend
+**Backend**
 - Python 3.9+
 - Django
-- Django Channels
 - Django REST Framework
+- Django Channels
 - PostgreSQL / SQLite
 - Redis (opcional)
 
-### Frontend
+**Frontend Mobile**
 - React Native
 
 ---
 
-## 🏗️ Arquitetura
+## 🏗️ Arquitetura do Projeto
 
 
 backend/
 ├── core/
 ├── apps/
-│ ├── tracking/
-│ ├── routes/
-│ ├── stops/
-│ ├── fleet/
-│ └── users/
+│ ├── authentication/
+│ ├── transporte/
+│ └── stops/
 ├── websocket/
 ├── services/
 ├── api/
@@ -70,105 +72,108 @@ backend/
 
 ---
 
-## ⚙️ Pré-requisitos
+## ⚙️ Instalação
 
-- Python 3.9+
-- pip
-- Virtualenv
-
----
-
-## 🚀 Instalação
+1. Clone o repositório:
 
 ```bash
-git clone https://github.com/seu-usuario/larangeo-backend.git
-cd larangeo-backend
+git clone https://github.com/Chico-wh/Geo-location-.git
+cd Geo-location-
+
+Crie e ative o ambiente virtual:
+
 python -m venv venv
-source venv/bin/activate   # Linux/Mac
-venv\Scripts\activate      # Windows
+source venv/bin/activate      # Linux / Mac
+venv\Scripts\activate         # Windows
+
+Instale dependências:
+
 pip install -r requirements.txt
+
+Configure variáveis de ambiente:
+
+Crie um arquivo .env com:
+
+SECRET_KEY=your-secret-key
+DEBUG=True
+DATABASE_URL=sqlite:///db.sqlite3
 ▶️ Execução
+
+Aplique as migrações:
+
 python manage.py migrate
+
+Inicie o servidor Django:
+
 python manage.py runserver
-🔌 WebSocket
+
+O backend estará disponível em:
+
+http://localhost:8000
+🔌 API & WebSockets
+REST
+
+A API expõe endpoints para listar linhas, pontos e status.
+
+Exemplo de filtro:
+
+GET /api/buses/?line=402&destination=Centro
+WebSockets
+
+Use o endpoint WebSocket para receber atualizações em tempo real:
+
 ws://localhost:8000/ws/tracking/
-🔄 Exemplo de Atualização de Status
+
+Exemplo de mensagem enviada pelo motorista ao servidor:
+
 {
   "bus_id": "123",
   "line": "402",
   "destination": "Centro",
-  "status": "maintenance",
+  "status": "operational",
   "lat": -22.9028,
   "lng": -43.2075,
   "timestamp": "2026-02-24T14:30:00"
 }
-🚏 Pontos de Parada
 
-O sistema mantém um cadastro estruturado de pontos de parada, contendo:
+Exemplo de mensagem retornada ao app:
 
-Nome
+{
+  "bus_id": "123",
+  "line": "402",
+  "status": "on_time",
+  "eta": 5,
+  "location": {
+    "lat": -22.9028,
+    "lng": -43.2075
+  }
+}
+🧩 Modelos de Dados (Resumido)
 
-Coordenadas geográficas
+Bus — armazena identificação, linha e status
 
-Linhas atendidas
+Stop — pontos de parada com coordenadas e ordem na rota
 
-Ordem na rota
+Route — conjunto de paradas que compõem uma linha
 
-Horários estimados
+🤝 Como Contribuir
 
-Esses dados são utilizados para cálculo de tempo e planejamento de rotas.
+Contribuições são bem-vindas!
 
-📊 Estimativa de Tempo (ETA)
+Faça um fork
 
-O cálculo de ETA é baseado em:
+Crie uma branch (feature/nova-feature)
 
-Velocidade média do veículo
+Commit suas mudanças
 
-Histórico de tráfego
-
-Distância até o ponto
-
-Status atual
-
-Eventos externos (congestionamentos)
-
-Este módulo está em constante evolução.
-
-📱 Aplicativo Mobile
-
-Funcionalidades:
-
-Mapa em tempo real
-
-Status dos ônibus
-
-Lista de paradas
-
-Previsão de chegada
-
-Alertas operacionais
-
-📈 Roadmap
-
-🤖 Machine Learning para previsão
-
-🧠 Detecção automática de falhas
-
-🔔 Notificações push
-
-📊 Dashboard web
-
-🌐 API pública
+Abra um Pull Request
 
 📄 Licença
 
-MIT
+Este projeto está licenciado sob a MIT License.
 
 👤 Autor
 
-Felipe Santos
-Backend & Mobile Developer
+Felipe Santos — Backend & Mobile Developer
 
-💬 Motivação
-
-O Larangeo nasceu da necessidade de democratizar o acesso à informação no transporte público, reduzindo atrasos, frustração e ineficiência operacional.
+Projeto Larangeo — democratizando informações de transporte público.
