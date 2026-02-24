@@ -77,8 +77,7 @@ backend/
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/Chico-wh/Geo-location-.git
-cd Geo-location-
+git clone https://github.com/Chico-wh/LaranGeo/edit/main/README.md
 
 Crie e ative o ambiente virtual:
 
