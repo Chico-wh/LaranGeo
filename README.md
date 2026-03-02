@@ -1,142 +1,178 @@
+
+```md
 # 🚍 Larangeo - Backend (Django)
 
-[![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)]()
+[![Status](https://img.shields.io/badge/status-in%20development-yellow)]()
 [![License](https://img.shields.io/badge/license-MIT-blue)]()
 
-Larangeo é o backend de um sistema de monitoramento em tempo real de ônibus urbanos. O objetivo é fornecer dados de localização, status operacional e estimativas de tempo de chegada para passageiros via aplicativo mobile.
+Larangeo is the backend of a real-time urban bus monitoring system.  
+Its goal is to provide location data, operational status, and estimated arrival times to passengers through a mobile app.
 
-O frontend mobile foi desenvolvido com **React Native** e consome tanto a API REST quanto os **WebSockets** deste backend.
+The mobile frontend was developed with **React Native** and consumes both the **REST API** and **WebSockets** provided by this backend.
 
-Este projeto foi idealizado a partir de um problema observado na vida real: a falta de informações sobre ônibus urbanos, que gera atrasos e dificulta o planejamento dos passageiros.
-
----
-
-## 🧭 Tabela de Conteúdo
-
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Arquitetura](#-arquitetura)
-- [Instalação](#-instalação)
-- [Execução](#-execução)
-- [API e WebSockets](#-api-e-websockets)
-- [Modelos de Dados](#-modelos-de-dados)
-- [Como Contribuir](#-como-contribuir)
-- [Licença](#-licença)
-- [Autor](#-autor)
+This project was inspired by a real-world problem: the lack of reliable public transport information, which causes delays and makes passenger planning difficult.
 
 ---
 
-## ✨ Funcionalidades
+## 🧭 Table of Contents
 
-O backend oferece:
-
-- 📍 Rastreamento em tempo real de ônibus via WebSockets
-- 🚦 Status operacional (ex: em operação, parado, manutenção, atrasado)
-- 📊 Filtros por linha, destino e pontos de parada
-- 🚏 Cadastro de pontos de parada e rotas
-- ⏱️ Estimativa de tempo de chegada (ETA)
-- 📱 Integração com frontend mobile (React Native)
-- 🧩 Estrutura modular para fácil expansão
+- [Features](#-features)
+- [Technologies](#-technologies)
+- [Project Architecture](#-project-architecture)
+- [Installation](#-installation)
+- [Running the Project](#-running-the-project)
+- [API and WebSockets](#-api-and-websockets)
+- [Data Models](#-data-models)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Author](#-author)
 
 ---
 
-## 🛠️ Tecnologias
+## ✨ Features
 
-**Backend**
+The backend provides:
+
+- 📍 Real-time bus tracking via WebSockets
+- 🚦 Operational status (e.g., running, stopped, maintenance, delayed)
+- 📊 Filters by line, destination, and stops
+- 🚏 Registration of stops and routes
+- ⏱️ Estimated Time of Arrival (ETA)
+- 📱 Integration with React Native mobile app
+- 🧩 Modular structure for easy expansion
+
+---
+
+## 🛠️ Technologies
+
+### Backend
 - Python 3.9+
 - Django
 - Django REST Framework
 - Django Channels
 - PostgreSQL / SQLite
-- Redis (opcional)
+- Redis (optional)
 
-**Frontend Mobile**
+### Mobile Frontend
 - React Native
 
 ---
 
-## 🏗️ Arquitetura do Projeto
+## 🏗️ Project Architecture
 
+```
 
 backend/
 ├── core/
 ├── apps/
-│ ├── authentication/
-│ ├── transporte/
-│ └── stops/
+│   ├── authentication/
+│   ├── transporte/
+│   └── stops/
 ├── websocket/
 ├── services/
 ├── api/
 └── manage.py
 
+````
 
 ---
 
-## ⚙️ Instalação
+## ⚙️ Installation
 
-1. Clone o repositório:
+1. Clone the repository:
 
 ```bash
-git clone https://github.com/Chico-wh/LaranGeo/edit/main/README.md
+git clone https://github.com/Chico-wh/LaranGeo.git
+cd LaranGeo
+````
 
-Crie e ative o ambiente virtual:
+2. Create and activate a virtual environment:
 
+```bash
 python -m venv venv
 source venv/bin/activate      # Linux / Mac
 venv\Scripts\activate         # Windows
+```
 
-Instale dependências:
+3. Install dependencies:
 
+```bash
 pip install -r requirements.txt
+```
 
-Configure variáveis de ambiente:
+4. Configure environment variables:
 
-Crie um arquivo .env com:
+Create a `.env` file with:
 
+```env
 SECRET_KEY=your-secret-key
 DEBUG=True
 DATABASE_URL=sqlite:///db.sqlite3
-▶️ Execução
+```
 
-Aplique as migrações:
+---
 
+## ▶️ Running the Project
+
+1. Apply migrations:
+
+```bash
 python manage.py migrate
+```
 
-Inicie o servidor Django:
+2. Start the Django server:
 
+```bash
 python manage.py runserver
+```
 
-O backend estará disponível em:
+The backend will be available at:
 
+```
 http://localhost:8000
-🔌 API & WebSockets
-REST
+```
 
-A API expõe endpoints para listar linhas, pontos e status.
+---
 
-Exemplo de filtro:
+## 🔌 API and WebSockets
 
-GET /api/buses/?line=402&destination=Centro
-WebSockets
+### REST API
 
-Use o endpoint WebSocket para receber atualizações em tempo real:
+The API provides endpoints to list bus lines, stops, and statuses.
 
+Example filter:
+
+```
+GET /api/buses/?line=402&destination=Downtown
+```
+
+---
+
+### WebSockets
+
+Use the WebSocket endpoint to receive real-time updates:
+
+```
 ws://localhost:8000/ws/tracking/
+```
 
-Exemplo de mensagem enviada pelo motorista ao servidor:
+#### Example message sent by the driver:
 
+```json
 {
   "bus_id": "123",
   "line": "402",
-  "destination": "Centro",
+  "destination": "Downtown",
   "status": "operational",
   "lat": -22.9028,
   "lng": -43.2075,
   "timestamp": "2026-02-24T14:30:00"
 }
+```
 
-Exemplo de mensagem retornada ao app:
+#### Example message sent to the app:
 
+```json
 {
   "bus_id": "123",
   "line": "402",
@@ -147,32 +183,37 @@ Exemplo de mensagem retornada ao app:
     "lng": -43.2075
   }
 }
-🧩 Modelos de Dados (Resumido)
+```
 
-Bus — armazena identificação, linha e status
+---
 
-Stop — pontos de parada com coordenadas e ordem na rota
+## 🧩 Data Models (Summary)
 
-Route — conjunto de paradas que compõem uma linha
+* **Bus** — stores identification, line, and status
+* **Stop** — bus stops with coordinates and order in the route
+* **Route** — set of stops that make up a bus line
 
-🤝 Como Contribuir
+---
 
-Contribuições são bem-vindas!
+## 🤝 Contributing
 
-Faça um fork
+Contributions are welcome!
 
-Crie uma branch (feature/nova-feature)
+1. Fork the project
+2. Create a branch (`feature/new-feature`)
+3. Commit your changes
+4. Open a Pull Request
 
-Commit suas mudanças
+---
 
-Abra um Pull Request
+## 📄 License
 
-📄 Licença
+This project is licensed under the MIT License.
 
-Este projeto está licenciado sob a MIT License.
+---
 
-👤 Autor
+## 👤 Author
 
 Felipe Santos — Backend & Mobile Developer
 
-Projeto Larangeo — democratizando informações de transporte público.
+Larangeo Project — democratizing public transport information.
